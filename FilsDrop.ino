@@ -115,13 +115,13 @@ void sleep(int minutes) {
   //Increment minutes and check for overflows
   m += minutes;
   if (m >= 60) {
-    m=0;
+    m= m%60;
     if (++h >= 24) {
-      h = 0;
+      h = h%24;
     }
   }
 
-  if(h > settings.work_end){ //Sleep until 6AM
+  if(h > settings.work_end || h < settings.work_start){ //Sleep until work_start time
     rtc.setAlarmTime(settings.work_start, 0, 0);
     
     //Re-sync RTC time with NTP client time
