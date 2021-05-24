@@ -1,0 +1,2 @@
+#define SECRET_SSID "APPARTAMENTO 04"
+#define SECRET_PASS "04Gorduno2015*"

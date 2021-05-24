@@ -1,0 +1,15 @@
+:Author: EliaPalme
+:Email: {AuthorEmail}
+:Date: 04/04/2021
+:Revision: version#
+:License: Public Domain
+
+= Project: {Project}
+
+Describe your project
+
+== Debug SSL
+If SSL connection does not work, perform a WiFiNINA Firmware update:
+https://www.arduino.cc/en/Tutorial/WiFiNINA-FirmwareUpdater and update SSL root certificate by including the require domain. 
+
+
