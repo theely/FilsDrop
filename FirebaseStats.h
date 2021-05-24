@@ -12,8 +12,9 @@ DynamicJsonDocument doc(capacity);
 
 typedef struct
 {
+  unsigned int epoch;
+  char * dateTime;
   float vBat;
-  char * startTime;
   int moisture;
   int dry_count;
   String action;
@@ -98,8 +99,9 @@ void pushUpdate(CycleStats cycleStatus) {
   cycleStatus.action.toCharArray(action, sizeof(action));
   
   char body[512];
-  snprintf(body, sizeof(body), "{\"startTime\" : \"%s\", \"moisture\" : \"%d\", \"vBat\" : \"%f\", \"DryCount\" : \"%d\", \"Action\" : \"%s\"}", 
-                           cycleStatus.startTime,
+  snprintf(body, sizeof(body), "{\"dateTime\" : \"%s\",\"epoch\" : \"%d\", \"moisture\" : \"%d\", \"vBat\" : \"%f\", \"DryCount\" : \"%d\", \"Action\" : \"%s\"}", 
+                           cycleStatus.dateTime,
+                           cycleStatus.epoch,
                            cycleStatus.moisture,
                            cycleStatus.vBat,
                            cycleStatus.dry_count,

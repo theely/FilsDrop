@@ -67,11 +67,13 @@ void setup() {
 
     //set timer
     rtc.begin();
-    rtc.setTime(timeClient.getHours() , timeClient.getMinutes() , timeClient.getSeconds());
-    rtc.setDate(1, 1, 20);
+    //rtc.setTime(timeClient.getHours() , timeClient.getMinutes() , timeClient.getSeconds());
+    //rtc.setDate(1, 1, 20);
+
+    rtc.setEpoch(timeClient.getEpochTime());
     rtc.attachInterrupt(wakeup);
 
-    CycleStats update = { getLiPoVoltage(), getDateTime() , 0, 0, "Booting"};
+    CycleStats update = { rtc.getEpoch(),getDateTime(),getLiPoVoltage() , 0, 0, "Booting"};
     pushUpdate(update);
   }
 
@@ -92,7 +94,7 @@ void loop() {
   
   if(settings.standby){
     statusMessage("Standby!");
-    CycleStats update = { getLiPoVoltage(), getDateTime() , 0, 0, "StandBy"};
+    CycleStats update = { rtc.getEpoch(),getDateTime(),getLiPoVoltage() , 0, 0, "StandBy"};
     pushUpdate(update);
   }else{
     dropCycle();
@@ -128,7 +130,7 @@ void sleep(int minutes) {
     timeClient.update();
     rtc.setTime(timeClient.getHours() , timeClient.getMinutes() , timeClient.getSeconds());
     
-    CycleStats update = { getLiPoVoltage(), getDateTime() , 0, 0, "Outside working hours - long sleep"};
+    CycleStats update = {rtc.getEpoch(),getDateTime(),getLiPoVoltage(), 0, 0, "Outside working hours - long sleep"};
     pushUpdate(update);
   }else{
     rtc.setAlarmTime(h, m, rtc.getSeconds());
@@ -165,7 +167,7 @@ void dropCycle(){
   int moisture = getMoisture(sensorA);
   Serial.print ( "[FILSDROP] Moisture level:" ); Serial.print ( moisture ); Serial.println ( " units" );
 
-  CycleStats update = { vBat, getDateTime() , moisture, dry_count, action};
+  CycleStats update = { rtc.getEpoch(),getDateTime(),getLiPoVoltage() , moisture, dry_count, action};
 
   if(vBat < 3.5){
     statusMessage("Low vBat, cycle aborted!");
