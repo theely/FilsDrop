@@ -119,7 +119,7 @@ void sleep(int minutes) {
   if (m >= 60) {
     m= m%60;
     if (++h >= 24) {
-      h = h%24;
+      h = 0;
     }
   }
 
