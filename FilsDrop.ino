@@ -67,9 +67,6 @@ void setup() {
 
     //set timer
     rtc.begin();
-    //rtc.setTime(timeClient.getHours() , timeClient.getMinutes() , timeClient.getSeconds());
-    //rtc.setDate(1, 1, 20);
-
     rtc.setEpoch(timeClient.getEpochTime());
     rtc.attachInterrupt(wakeup);
 
@@ -84,13 +81,14 @@ void setup() {
 void loop() {
 
   digitalWrite(LED_BUILTIN, HIGH);
-  
+
   if(!is_connected_to_wifi){
       wifi_server();
       delay(1000);
       return;
   }
-  check_wifi_satus();
+
+  connect_to_wifi();
   
   if(settings.standby){
     statusMessage("Standby!");
@@ -101,8 +99,8 @@ void loop() {
   }
   //settings are updated at the end of the loop to ensure the first cycle
   //is always a stand by one.
-  readSettings(); 
-  digitalWrite(LED_BUILTIN, LOW);
+  readSettings();
+  digitalWrite(LED_BUILTIN, LOW); 
   sleep(settings.cyle_rest);
 }
 
@@ -112,6 +110,7 @@ void sleep(int minutes) {
   //needed to initiate long sleep after 18PM
   int h = rtc.getHours();
   int m = rtc.getMinutes();
+  int s = rtc.getSeconds();
   
 
   //Increment minutes and check for overflows
@@ -128,21 +127,20 @@ void sleep(int minutes) {
     
     //Re-sync RTC time with NTP client time
     timeClient.update();
-    rtc.setTime(timeClient.getHours() , timeClient.getMinutes() , timeClient.getSeconds());
+    rtc.setEpoch(timeClient.getEpochTime());
     
     CycleStats update = {rtc.getEpoch(),getDateTime(),getLiPoVoltage(), 0, 0, "Outside working hours - long sleep"};
     pushUpdate(update);
   }else{
-    rtc.setAlarmTime(h, m, rtc.getSeconds());
+    rtc.setAlarmTime(h, m, s);
   }
   
   rtc.enableAlarm(rtc.MATCH_HHMMSS);
+  Serial.print ( "[FILSDROP] Wakeup at:" ); Serial.print ( h ); Serial.print ( ":" ); Serial.print ( m); Serial.print ( ":" ); Serial.println ( s);
   
   //Power saving
   WiFi.disconnect();
   WiFi.end();
-  USBDevice.detach();
-  
   rtc.standbyMode();
 }
 

@@ -15,9 +15,10 @@ int connect_to_wifi() {
   if (fv < "1.0.0") {
     Serial.println("Please upgrade the firmware");
   }
-
+  status = WL_IDLE_STATUS;
+  
   // attempt to connect to Wifi network:
-  int max_attempt = 1;
+  int max_attempt = 3;
   while (status != WL_CONNECTED) {
     Serial.print("[WiFi] Connecting to: ");
     Serial.println(config.ssid);
