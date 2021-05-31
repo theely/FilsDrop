@@ -106,37 +106,27 @@ void loop() {
 
 void sleep(int minutes) {
     
-  //Sync RTC with current NTP time
-  //needed to initiate long sleep after 18PM
-  int h = rtc.getHours();
-  int m = rtc.getMinutes();
-  int s = rtc.getSeconds();
-  
 
-  //Increment minutes and check for overflows
-  m += minutes;
-  if (m >= 60) {
-    m= m%60;
-    if (++h >= 24) {
-      h = 0;
-    }
-  }
+  unsigned int epoc = rtc.getEpoch();
+  epoc += minutes*60;
+  rtc.setAlarmEpoch(epoc);
+
+  int h = rtc.getAlarmHours();
 
   if(h > settings.work_end || h < settings.work_start){ //Sleep until work_start time
     rtc.setAlarmTime(settings.work_start, 0, 0);
     
     //Re-sync RTC time with NTP client time
-    timeClient.update();
-    rtc.setEpoch(timeClient.getEpochTime());
+    //NOTE: this sync seems to introduce some bugs and wrong hours
+    //timeClient.update();
+    //rtc.setEpoch(timeClient.getEpochTime());
     
     CycleStats update = {rtc.getEpoch(),getDateTime(),getLiPoVoltage(), 0, 0, "Outside working hours - long sleep"};
     pushUpdate(update);
-  }else{
-    rtc.setAlarmTime(h, m, s);
   }
   
   rtc.enableAlarm(rtc.MATCH_HHMMSS);
-  Serial.print ( "[FILSDROP] Wakeup at:" ); Serial.print ( h ); Serial.print ( ":" ); Serial.print ( m); Serial.print ( ":" ); Serial.println ( s);
+ Serial.print ( "[FILSDROP] Wakeup at:" ); Serial.print ( rtc.getAlarmHours() ); Serial.print ( ":" ); Serial.print ( rtc.getAlarmMinutes()); Serial.print ( ":" ); Serial.println ( rtc.getAlarmSeconds());
   
   //Power saving
   WiFi.disconnect();
@@ -202,6 +192,7 @@ void dropCycle(){
   }
 
   update.action = action;
+  update.dry_count = dry_count;
   pushUpdate(update);
   
 }
@@ -238,9 +229,9 @@ void startPumpCicles(){
   statusMessage("Start pumping");
   for(int i=settings.pump_pushes;i>0;i--){
     digitalWrite(0, HIGH);
-    delay(settings.pump_interval*1000);
+    delay(settings.pump_time*1000);
     digitalWrite(0, LOW);
-    delay(settings.pump_interval*1000);
+    delay(settings.pump_time*1000);
   }
   statusMessage("Stop pumping");
 }

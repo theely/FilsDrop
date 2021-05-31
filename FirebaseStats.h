@@ -27,7 +27,7 @@ typedef struct
   int cyle_rest;
   int dry_cicles;
   int moisture_threshold;
-  int pump_interval;
+  int pump_time;
   int pump_pushes;
   int work_start;
   int work_end;
@@ -37,12 +37,12 @@ typedef struct
 static int _cyle_rest     = 60;   //1h
 static int _dry_cicles    = 8;            //8h (at least 8h of dryines)
 static int _moisture_threshold = 900;
-static int _pump_interval = 5;     //5s
+static int _pump_time = 60;     //60s
 static int _pump_pushes   = 120;          //10min weatering
 static int _work_start    = 7;            
 static int _work_end      = 19;          
 
-Settings settings = { true, _cyle_rest, _dry_cicles,  _moisture_threshold,_pump_interval,_pump_pushes,_work_start,_work_end };
+Settings settings = { true, _cyle_rest, _dry_cicles,  _moisture_threshold,_pump_time,_pump_pushes,_work_start,_work_end };
 
 
 
@@ -70,7 +70,7 @@ void readSettings() {
     settings.dry_cicles = doc["dryCicles"];
     settings.cyle_rest = doc["restTime"];
     settings.moisture_threshold = doc["moistureThreshold"];
-    settings.pump_interval = doc["pumpIntervals"];
+    settings.pump_time = doc["pumpTime"];
     settings.pump_pushes = doc["pumpPushes"];
     settings.work_start = doc["workStartTime"];
     settings.work_end = doc["workEndTime"];
